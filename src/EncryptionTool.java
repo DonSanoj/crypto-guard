@@ -51,6 +51,19 @@ public class EncryptionTool extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        try {
+
+            if (e.getSource() == encryptAesButton) {
+                aesKey = AESEncryption.generateKey();
+                String message = messageField.getText();
+                String encryptedMessage = AESEncryption.encrypt(message, aesKey);
+                outputArea.append("AES Encrypted: " + encryptedMessage + "\n");
+                FileUtil.saveKey(aesKey, new File("aesKey.key"));
+            }
+
+        } catch (Exception ex) {
+            outputArea.append("Error: " + ex.getMessage() + "\n");
+        }
     }
 
     public static void main(String[] args) {
