@@ -50,7 +50,6 @@ public class EncryptionTool extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         try {
 
             if (e.getSource() == encryptAesButton) {
@@ -59,6 +58,36 @@ public class EncryptionTool extends JFrame implements ActionListener {
                 String encryptedMessage = AESEncryption.encrypt(message, aesKey);
                 outputArea.append("AES Encrypted: " + encryptedMessage + "\n");
                 FileUtil.saveKey(aesKey, new File("aesKey.key"));
+
+            } else if (e.getSource() == decryptAesButton) {
+                aesKey = FileUtil.loadKey(new File("aesKey.key"));
+                String encryptedMessage = messageField.getText();
+                String decryptedMessage = AESEncryption.decrypt(encryptedMessage, aesKey);
+                outputArea.append("AES Decrypted: " + decryptedMessage + "\n");
+
+            } else if (e.getSource() == encryptRsaButton) {
+                rsaKeyPair = RSAEncryption.generateKeyPair();
+                String message = messageField.getText();
+                String encryptedMessage = RSAEncryption.encrypt(message, rsaKeyPair.getPublic());
+                outputArea.append("RSA Encrypted: " + encryptedMessage + "\n");
+
+            } else if (e.getSource() == decryptRsaButton) {
+                String encryptedMessage = messageField.getText();
+                String decryptedMessage = RSAEncryption.decrypt(encryptedMessage, rsaKeyPair.getPrivate());
+                outputArea.append("RSA Decrypted: " + decryptedMessage + "\n");
+
+            } else if (e.getSource() == selectFileButton) {
+
+                // File selection and encryption logic
+                JFileChooser fileChooser = new JFileChooser();
+                int returnValue = fileChooser.showOpenDialog(this);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File inputFile = fileChooser.getSelectedFile();
+                    File outputFile = new File(inputFile.getAbsolutePath() + ".enc");
+                    aesKey = FileUtil.loadKey(new File("aesKey.key"));
+                    AESEncryption.encryptFile(inputFile, outputFile, aesKey);
+                    outputArea.append("File encrypted: " + outputFile.getAbsolutePath() + "\n");
+                }
             }
 
         } catch (Exception ex) {
